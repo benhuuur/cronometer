@@ -1,15 +1,15 @@
 #include <Arduino.h>
 
-// Define pins for the segments of the 7-segment displays
+// Define os pinos para os segmentos dos displays de 7 segmentos
 byte unitSegment[] = {5, 6, 7, 8};
 byte tenSegment[] = {9, 10, 11, 12};
 
-// Variables for displaying time as digits
+// Variáveis para exibição do tempo em dígitos
 int unitsDigit = 0;
 int tensDigit = 0;
 int startTime;
 
-// State variables for buttons
+// Variáveis de estado para os botões
 boolean isRunning = false;
 boolean lastStartButtonState = false;
 boolean lastStopButtonState = false;
@@ -17,7 +17,7 @@ boolean lastResetButtonState = false;
 
 boolean currentStartButtonState, currentStopButtonState, currentResetButtonState;
 
-// Define pins for buttons
+// Define os pinos para os botões
 #define START_BUTTON 2
 #define STOP_BUTTON 3
 #define RESET_BUTTON 4
@@ -25,14 +25,14 @@ boolean currentStartButtonState, currentStopButtonState, currentResetButtonState
 
 void setup()
 {
-    // Initialize serial communication and configure button and LED pins
+    // Inicializa a comunicação serial e configura os pinos dos botões e LEDs
     Serial.begin(9600);
     pinMode(START_BUTTON, INPUT);
     pinMode(STOP_BUTTON, INPUT);
     pinMode(RESET_BUTTON, INPUT);
     pinMode(RUNNING_LED, OUTPUT);
 
-    // Configure pins for segments of the 7-segment displays as output
+    // Configura os pinos dos segmentos dos displays como saída
     for (int i = 0; i < 4; i++)
     {
         pinMode(unitSegment[i], OUTPUT);
@@ -42,12 +42,12 @@ void setup()
 
 void loop()
 {
-    // Read the current state of the buttons
+    // Lê o estado atual dos botões
     currentStartButtonState = digitalRead(START_BUTTON);
     currentStopButtonState = digitalRead(STOP_BUTTON);
     currentResetButtonState = digitalRead(RESET_BUTTON);
 
-    // Start the timer when the start button is pressed
+    // Inicia o temporizador quando o botão de início é pressionado
     if (currentStartButtonState == HIGH && lastStartButtonState == LOW)
     {
         Serial.println("Started");
@@ -55,18 +55,18 @@ void loop()
         startTime = millis();
     }
 
-    // Stop the timer when the stop button is pressed
+    // Para o temporizador quando o botão de parada é pressionado
     if (currentStopButtonState == HIGH && lastStopButtonState == LOW)
         isRunning = false;
 
-    // Reset the timer and digits when the reset button is pressed
+    // Reinicia o temporizador e os dígitos quando o botão de reinício é pressionado
     if (currentResetButtonState == HIGH && lastResetButtonState == LOW)
     {
         isRunning = false;
         unitsDigit = tensDigit = 0;
     }
 
-    // Update the digits if the timer is running
+    // Atualiza os dígitos se o temporizador estiver em execução
     if (isRunning)
     {
         digitalWrite(RUNNING_LED, HIGH);
@@ -77,6 +77,9 @@ void loop()
         if (elapsedSeconds > 0)
         {
             unitsDigit += elapsedSeconds;
+
+            if (tensDigit == 5 && unitsDigit == 9)
+               unitsDigit = tensDigit = 0;
 
             if (unitsDigit > 9)
             {
@@ -90,17 +93,17 @@ void loop()
     else
         digitalWrite(RUNNING_LED, LOW);
 
-    // Display the digits on the 7-segment displays
+    // Exibe os dígitos nos displays de 7 segmentos
     binaryOutput(unitSegment, unitsDigit);
     binaryOutput(tenSegment, tensDigit);
 
-    // Update the states of the buttons
+    // Atualiza os estados dos botões
     lastResetButtonState = currentResetButtonState;
     lastStopButtonState = currentStopButtonState;
     lastStartButtonState = currentStartButtonState;
 }
 
-// Function to display a binary number on the 7-segment displays
+// Função para exibir um número binário nos displays de 7 segmentos
 void binaryOutput(byte output[], int number)
 {
     if (number % 2 == 0)
