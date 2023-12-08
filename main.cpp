@@ -1,4 +1,6 @@
 #include <Arduino.h>
+
+// Define pins for the segments of the 7-segment displays
 byte unitSegment[] = {5, 6, 7, 8};
 byte tenSegment[] = {9, 10, 11, 12};
 
@@ -7,30 +9,30 @@ int unitsDigit = 0;
 int tensDigit = 0;
 int startTime;
 
-// int debounce = 50;
-
 // State variables for buttons
 boolean isRunning = false;
-boolean lastStartState = false;
-boolean lastStopState = false;
-boolean lastZeroState = false;
+boolean lastStartButtonState = false;
+boolean lastStopButtonState = false;
+boolean lastResetButtonState = false;
 
-boolean currentStartState, currentStopState, currentZeroState;
+boolean currentStartButtonState, currentStopButtonState, currentResetButtonState;
 
-// Button pin definitions
-#define BTN_START 2
-#define BTN_STOP 3
-#define BTN_ZERO 4
+// Define pins for buttons
+#define START_BUTTON 2
+#define STOP_BUTTON 3
+#define RESET_BUTTON 4
 #define RUNNING_LED 13
 
 void setup()
 {
+    // Initialize serial communication and configure button and LED pins
     Serial.begin(9600);
-    pinMode(BTN_START, INPUT);
-    pinMode(BTN_STOP, INPUT);
-    pinMode(BTN_ZERO, INPUT);
+    pinMode(START_BUTTON, INPUT);
+    pinMode(STOP_BUTTON, INPUT);
+    pinMode(RESET_BUTTON, INPUT);
     pinMode(RUNNING_LED, OUTPUT);
 
+    // Configure pins for segments of the 7-segment displays as output
     for (int i = 0; i < 4; i++)
     {
         pinMode(unitSegment[i], OUTPUT);
@@ -40,25 +42,31 @@ void setup()
 
 void loop()
 {
-    currentStartState = digitalRead(BTN_START);
-    currentStopState = digitalRead(BTN_STOP);
-    currentZeroState = digitalRead(BTN_ZERO);
+    // Read the current state of the buttons
+    currentStartButtonState = digitalRead(START_BUTTON);
+    currentStopButtonState = digitalRead(STOP_BUTTON);
+    currentResetButtonState = digitalRead(RESET_BUTTON);
 
-    if (currentStartState == HIGH && lastStartState == LOW)
+    // Start the timer when the start button is pressed
+    if (currentStartButtonState == HIGH && lastStartButtonState == LOW)
     {
-        isRunning = !isRunning;
+        Serial.println("Started");
+        isRunning = true;
         startTime = millis();
     }
 
-    if (currentStopState == HIGH && lastStopState == LOW)
+    // Stop the timer when the stop button is pressed
+    if (currentStopButtonState == HIGH && lastStopButtonState == LOW)
         isRunning = false;
 
-    if (currentZeroState == HIGH && lastZeroState == LOW)
+    // Reset the timer and digits when the reset button is pressed
+    if (currentResetButtonState == HIGH && lastResetButtonState == LOW)
     {
         isRunning = false;
         unitsDigit = tensDigit = 0;
     }
 
+    // Update the digits if the timer is running
     if (isRunning)
     {
         digitalWrite(RUNNING_LED, HIGH);
@@ -82,16 +90,17 @@ void loop()
     else
         digitalWrite(RUNNING_LED, LOW);
 
-    Serial.print(unitsDigit);
-    Serial.print(tensDigit);
+    // Display the digits on the 7-segment displays
     binaryOutput(unitSegment, unitsDigit);
     binaryOutput(tenSegment, tensDigit);
 
-    lastZeroState = lastZeroState;
-    lastStopState = lastStopState;
-    lastStartState = lastStartState;
+    // Update the states of the buttons
+    lastResetButtonState = currentResetButtonState;
+    lastStopButtonState = currentStopButtonState;
+    lastStartButtonState = currentStartButtonState;
 }
 
+// Function to display a binary number on the 7-segment displays
 void binaryOutput(byte output[], int number)
 {
     if (number % 2 == 0)
