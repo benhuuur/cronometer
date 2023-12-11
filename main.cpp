@@ -78,7 +78,7 @@ void loop()
         {
             unitsDigit += elapsedSeconds;
 
-            if (tensDigit == 5 && unitsDigit == 9)
+            if (tensDigit == 5 && unitsDigit > 9)
                unitsDigit = tensDigit = 0;
 
             if (unitsDigit > 9)
