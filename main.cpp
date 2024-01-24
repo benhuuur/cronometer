@@ -1,5 +1,3 @@
-#include <Arduino.h>
-
 // Define os pinos para os segmentos dos displays de 7 segmentos
 byte unitSegment[] = {5, 6, 7, 8};
 byte tenSegment[] = {9, 10, 11, 12};
