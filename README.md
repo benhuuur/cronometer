@@ -1,5 +1,3 @@
-Certainly, here's the translated version of your readme:
-
 # 7-Segment Chronometer
 
 This is a simple project for a digital chronometer using 7-segment displays. The chronometer is implemented on an Arduino board and displays the seconds on two 7-segment displays. The project features buttons to start, stop, and reset the chronometer.
