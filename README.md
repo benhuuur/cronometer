@@ -28,5 +28,3 @@ This is a simple project for a digital chronometer using 7-segment displays. The
 - This is a basic project and can be customized as needed.
 - Make sure to have the Arduino development environment set up correctly.
 - Check component specifications for proper assembly and operation.
-
-Have fun creating your own digital chronometer with 7-segment displays on Arduino!
